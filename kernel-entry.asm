@@ -12,11 +12,25 @@ section .text
 global start            ;make our entry-point globally visible
 extern kmain            ;kmain is the kernel main function in the C file
 
+;The entry point of the kernel.
 start:
     cli                     ;clear interrupts (so our kernel isn't woken up after we halt it)
     mov esp, stack_space    ;set up the stack pointer to our stack space
     call kmain              ;call our C kernel's main function
     hlt                     ;halt the cpu (our kernel is done)
+
+;Read from a port
+read_port:
+    mov edx, [esp + 4]  ;The port number comes in as an argument (on the stack), so move it to edx
+    in al, dx           ;Read from port dx and store the byte is al (lower 8 bits of eax)
+    ret
+
+;Write to a port
+write_port:
+    mov edx, [esp + 4]  ;The port number comes in as an argument (on the stack), so we move it to edx
+    mov al, [esp + 8]   ;The data to be written comes in as an argument too, so we move it to al
+    out dx, al          ;Write the value in al to the port dx.
+    ret
 
 section .bss
 resb 8192               ;8KB reserved for our stack

@@ -3,7 +3,9 @@ operating system development work
 
 ### Commands
 "qemu-system-i386 -kernel kernel" will launch qemu running the kernel.
+
 "make" should build everything (nasm, gcc, and ld commands)
+
 "make clean" should clean out all object and executable files.
 
 
