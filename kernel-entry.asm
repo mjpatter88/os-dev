@@ -10,7 +10,13 @@ section .text
     dd - (0x1BADB002 + 0x00)    ;checksum. magic + flags + checksum should be 0
 
 global start            ;make our entry-point globally visible
+global read_port
+global write_port
+global load_idt
+global keyboard_handler
+
 extern kmain            ;kmain is the kernel main function in the C file
+extern keyboard_handler_main    ;the keryboard handler function in the C file
 
 ;The entry point of the kernel.
 start:
@@ -22,7 +28,7 @@ start:
 ;Read from a port
 read_port:
     mov edx, [esp + 4]  ;The port number comes in as an argument (on the stack), so move it to edx
-    in al, dx           ;Read from port dx and store the byte is al (lower 8 bits of eax)
+    in al, dx           ;Read from port dx and store the byte in al (lower 8 bits of eax)
     ret
 
 ;Write to a port
@@ -31,6 +37,18 @@ write_port:
     mov al, [esp + 8]   ;The data to be written comes in as an argument too, so we move it to al
     out dx, al          ;Write the value in al to the port dx.
     ret
+
+;Load the pointer to the IDT and enable interrupts
+load_idt:
+    mov edx, [esp + 4]
+    lidt [edx]
+    sti
+    ret
+
+;Handle a keyboard interrupt
+keyboard_handler:
+    call keyboard_handler_main
+    iretd
 
 section .bss
 resb 8192               ;8KB reserved for our stack
