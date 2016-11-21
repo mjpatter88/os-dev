@@ -9,6 +9,8 @@ kernel.o: kernel.c
 kernel-entry.o: kernel-entry.asm
 	nasm -f elf32 kernel-entry.asm -o kernel-entry.o
 
+run: kernel
+	qemu-system-i386 -kernel kernel
 
 clean:
 	rm -f *.o
