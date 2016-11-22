@@ -91,14 +91,24 @@ void keyboard_handler_main(void)
         {
             return;
         }
-        vidptr[current_loc++] = keyboard_map[keycode];
-        vidptr[current_loc++] = 0x07;
+        char cur_char = keyboard_map[keycode];
+        if(cur_char ==  '\b')
+        {
+            current_loc -= 2;
+            vidptr[current_loc] = ' ';
+        }
+        else
+        {
+            vidptr[current_loc++] = keyboard_map[keycode];
+            vidptr[current_loc++] = 0x07;
+        }
     }
 }
 
 void kmain(void)
 {
-    const char *str = "Hello, World 2";
+    const char *str = "Hello, World!";
+    const char *str2 = "Try typing a few characters at the following prompt.";
 
     // Clear the screen. 25 lines, each of 80 columns, each position having 2 bytes
     unsigned int i = 0;
@@ -107,7 +117,7 @@ void kmain(void)
         vidptr[i+1] = 0x07; // attribute-byte, light-grey on black screen
     }
 
-    // Write the string to the screen
+    // Write the first string to the screen
     i = 0;
     unsigned int j = 0;
     while(str[j] != '\0') {
@@ -116,6 +126,23 @@ void kmain(void)
         j++;
         i+=2;
     }
+
+    // Write the second string to the screen
+    int row = 1;
+    i = 80*row*2;
+    j = 0;
+    while(str2[j] != '\0') {
+        vidptr[i] = str2[j];
+        vidptr[i+1] = 0x07; // attribute-byte, light-grey on black screen
+        j++;
+        i+=2;
+    }
+
+    row = 3;
+    i = 80*row*2;
+    vidptr[i] = '>';
+    vidptr[i+1] = 0x07;
+
 
     idt_init();
     kb_init();
