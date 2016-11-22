@@ -14,6 +14,7 @@ global read_port
 global write_port
 global load_idt
 global keyboard_handler
+global move_cursor
 
 extern kmain            ;kmain is the kernel main function in the C file
 extern keyboard_handler_main    ;the keryboard handler function in the C file
@@ -36,6 +37,25 @@ write_port:
     mov edx, [esp + 4]  ;The port number comes in as an argument (on the stack), so we move it to edx
     mov al, [esp + 8]   ;The data to be written comes in as an argument too, so we move it to al
     out dx, al          ;Write the value in al to the port dx.
+    ret
+
+;TODO: Finish the following function
+;Move the framebuffer cursor to the given row and colum
+move_cursor:
+    ; start by moving to row 3 col 1 -> 240 + 1 -> 0xF1
+    mov al, 14
+    mov dx, 0x3D4
+    out dx, al   ; 14 signifies HIGH bits are coming
+    mov al, 0
+    mov dx, 0x3D5
+    out dx, al
+
+    mov al, 15
+    mov dx, 0x3D4
+    out dx, al   ; 15 signifies LOW bits are coming
+    mov al, 0xF1
+    mov dx, 0x3D5
+    out dx, al
     ret
 
 ;Load the pointer to the IDT and enable interrupts

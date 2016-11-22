@@ -22,6 +22,7 @@ extern void keyboard_handler(void);
 extern char read_port(unsigned short port);
 extern void write_port(unsigned short port, unsigned char data);
 extern void load_idt(unsigned long *idt_ptr);
+extern void move_cursor(void);
 
 unsigned int current_loc = 0;
 char *vidptr = (char*)0xb8000;          // A pointer to the start of video memory
@@ -138,11 +139,14 @@ void kmain(void)
         i+=2;
     }
 
+    // Write the console prompt
     row = 3;
     i = 80*row*2;
     vidptr[i] = '>';
     vidptr[i+1] = 0x07;
 
+    // Move the cursor (TODO:start here, move to appropriate place)
+    move_cursor();
 
     idt_init();
     kb_init();
